@@ -1,0 +1,38 @@
+import pandas as pd
+
+# Загружаем данные
+file_path = "dz.csv"
+df = pd.read_csv(file_path)
+
+print(df.head())
+print(df.tail())
+print(df.info())
+
+# Группируем данные по городу и рассчитываем среднюю зарплату
+salary_by_city = df.groupby("City")["Salary"].mean()
+
+# Удаляем строки с отсутствующими значениями в колонках City или Salary
+df = df.dropna(subset=["City", "Salary"])
+
+# Приводим названия городов к единому формату (убираем лишние пробелы, переводим в нижний регистр)
+df["City"] = df["City"].str.strip().str.capitalize()
+
+# Проверяем, что зарплата представлена числовым значением
+df["Salary"] = pd.to_numeric(df["Salary"], errors="coerce")
+
+# Удаляем аномальные значения (например, зарплаты меньше минимальной МРОТ или слишком высокие)
+df = df[(df["Salary"] > 10000) & (df["Salary"] < 1000000)]
+
+# Группируем данные по городу и рассчитываем среднюю зарплату
+salary_by_city_cleaned = df.groupby("City")["Salary"].mean()
+
+# Отображаем результат
+print('\nДанные по средней заработной плате в разрезе городов: ')
+print(salary_by_city_cleaned)
+
+# Группируем данные по городу и рассчитываем среднюю зарплату используя DataFrame
+salary_by_city_cleaned = df.groupby("City")["Salary"].mean().reset_index()
+
+# Отображаем результат используя DataFrame
+print('\nДанные по средней заработной плате в разрезе городов: ')
+print(salary_by_city_cleaned)
